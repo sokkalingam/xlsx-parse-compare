@@ -1,0 +1,11 @@
+{
+  "name": "xlsx-parser",
+  "version": "1.0.0",
+  "description": "parse and compare two xlsx files for a specific purpose",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
