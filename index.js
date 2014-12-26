@@ -31,9 +31,9 @@ onFileUploadComplete: function (file) {
 /*Handling routes.*/
 
 app.get('/',function(req,res){
-  // mkdirp('uploads', function(){
+  mkdirp('uploads', function(){
     res.sendFile(__dirname + '/index.html');
-  // });
+  });
 });
 
 app.post('/api/xlsx',function(req,res){
