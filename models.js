@@ -175,7 +175,7 @@ var compare = function(){
       response.write(messages[i] + "\n");
     }
     response.end();
-    deleteFolder();
+    // deleteFolder();
   } 
   else {
     console.log('Nothing to compare');
