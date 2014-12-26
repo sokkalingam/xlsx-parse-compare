@@ -12,7 +12,7 @@ var done        = false;
 var fileNameA, fileNameB;
 
 /*Configure the multer.*/
-
+app.set('port', (process.env.PORT || 5000));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(multer({ dest: './uploads/',
@@ -48,8 +48,8 @@ app.post('/api/xlsx',function(req,res){
 });
 
 /*Run the server.*/
-app.listen(3001,function(){
-    console.log("Working on port 3001");
+app.listen(app.get('port'),function(){
+    console.log("Working on port " + app.get('port'));
 });
 
 
