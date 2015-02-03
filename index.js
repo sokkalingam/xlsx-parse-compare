@@ -7,9 +7,11 @@ var app         = express();
 var bodyParser  = require('body-parser');
 var mkdirp      = require('mkdirp');
 
-var models      = require('./models.js');
+var models      = require('./models/models.js');
 var done        = false;
 var fileNameA, fileNameB;
+
+app.use(express.static(__dirname + '/public'));
 
 /*Configure the multer.*/
 app.set('port', (process.env.PORT || 5000));
@@ -32,7 +34,7 @@ onFileUploadComplete: function (file) {
 
 app.get('/',function(req,res){
   mkdirp('uploads', function(){
-    res.sendFile(__dirname + '/index.html');
+    res.render('index.ejs');
   });
 });
 
@@ -51,6 +53,3 @@ app.post('/api/xlsx',function(req,res){
 app.listen(app.get('port'),function(){
     console.log("Working on port " + app.get('port'));
 });
-
-
-  

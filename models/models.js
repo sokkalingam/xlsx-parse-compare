@@ -1,9 +1,9 @@
 var xlsxj = require("xlsx-to-json");
 var rmrf  = require('rimraf');
 
-var fileAdone, fileBdone, errorsFound, found;
+var fileAdone, fileBdone, found;
 var response, measure_id;
-var rowsInA,rowsInB,rowsToBeNotFound,messages;
+var rowsInA,rowsInB,rowsToBeNotFound,errorMessages;
 
 var to_json = function(fileName, cb){
   xlsxj({
@@ -58,8 +58,8 @@ var processFileB = function (result){
     measure_id = first_row['measure_id'];
   }
 
-  messages.push("Displaying details for measure_id: " + measure_id);
-  messages.push("Denominator: " + first_row['denominator'] + "\t" +
+  errorMessages.push("Displaying details for measure_id: " + measure_id);
+  errorMessages.push("Denominator: " + first_row['denominator'] + "\t" +
                 "Numerator: " + first_row['numerator'] + "\t" +
                 "Exclusion: " + first_row['exclusion'] + "\t" +
                 "Performance Rate: " + first_row['performance_rate'] + "\n");
@@ -84,24 +84,23 @@ var processFileB = function (result){
 
 var compare = function(){
 
-  if (fileAdone && fileBdone) 
+  if (fileAdone && fileBdone)
   {
     console.log("Comparing...");
     errorsFound = false;
-    
 
     console.log("Lengths " + rowsInA.length + " " + rowsToBeNotFound.length + " " + rowsInB.length);
 
     if (rowsInA.length === 0 &&
-        rowsToBeNotFound.length === 0) 
+        rowsToBeNotFound.length === 0)
     {
-      messages.push("ERROR: File A doesn't seem to have 'Account Number' column");
+      errorMessages.push("ERROR: File A doesn't seem to have 'Account Number' column");
       errorsFound = true;
     };
 
     if (rowsInB.length === 0)
     {
-      messages.push("ERROR: File B doesn't seem to have 'pt_id' column");
+      errorMessages.push("ERROR: File B doesn't seem to have 'pt_id' column");
       errorsFound = true;
     };
 
@@ -119,13 +118,12 @@ var compare = function(){
             measure_id === b.measure_id)
         {
             console.log("ERROR: Acc No: " + a.acc_no + " was found in File B");
-            messages.push("ERROR: Acc No: " + a.acc_no + " was found in File B");
+            errorMessages.push("ERROR: Acc No: " + a.acc_no + " was found in File B");
             errorsFound = true;
         }
       }
     }
 
-    messages.push("\n\n");
     console.log("rowsInA");
     for(i in rowsInA)
     {
@@ -150,33 +148,26 @@ var compare = function(){
 
       }
 
-      if (!found) 
+      if (!found)
       {
-        messages.push("ERROR: Not Found Acc No: " + a.acc_no +
+        errorMessages.push("ERROR: Not Found Acc No: " + a.acc_no +
                     "\tDen: " + a.den + "\tNum: " + a.num +
                     "\tMeasure ID: " + measure_id);
         for(i in rowsInB){
           b = rowsInB[i];
           if (b.acc_no === a.acc_no) {
-            messages.push("\t   Found Acc No: " + b.acc_no + 
-                          "\tDen: " + b.den + 
-                          "\tNum: " + b.num + 
-                          "\tMeasure ID: " + b.measure_id);     
+            errorMessages.push("\t   Found Acc No: " + b.acc_no +
+                          "\tDen: " + b.den +
+                          "\tNum: " + b.num +
+                          "\tMeasure ID: " + b.measure_id);
           };
         }
-
-        errorsFound = true;
-      }      
+      }
     }
 
-    if (!errorsFound) { messages.push("Congrats, No errors found"); }
-    
-    for(i in messages){
-      response.write(messages[i] + "\n");
-    }
-    response.end();
+    response.render('result.ejs', {errorMessages: errorMessages});
     deleteFolder();
-  } 
+  }
   else {
     console.log('Nothing to compare');
   }
@@ -193,7 +184,7 @@ var process = function (fileNameA, fileNameB, mes_id, res){
     measure_id = mes_id;
     fileAdone = false;
     fileBdone = false;
-    messages = [];
+    errorMessages = [];
     to_json(fileNameA, processFileA);
     to_json(fileNameB, processFileB);
 };
